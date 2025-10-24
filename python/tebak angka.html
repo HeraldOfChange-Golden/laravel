@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Tebak Angka - 8 Kesempatan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #7f8dc5 0%, #15172b 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgb(246, 250, 255);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 1.0);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        
+        .game-info {
+            background: #98a9d8;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            border: 2px solid #515080;
+        }
+        
+        .info-item {
+            text-align: center;
+        }
+        
+        .info-label {
+            font-size: 0.8rem;
+            color: #1c2935;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #3a3a5c;
+        }
+        
+        .input-section {
+            margin: 20px 0;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #2b3641;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            border-color: #58618a;
+            outline: none;
+        }
+        
+        button {
+            background: linear-gradient(to right, #727db1, #2b2c5a);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 5.0);
+        }
+        
+        #message {
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .attempts-list {
+            margin-top: 15px;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+        
+        .attempts-list h3 {
+            margin-bottom: 10px;
+            color: #495057;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .attempt-item {
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #606b9e;
+            font-size: 0.9rem;
+        }
+        
+        .attempt-low {
+            border-left-color: #ff6b6b;
+            background: #fff5f5;
+        }
+        
+        .attempt-high {
+            border-left-color: #4ecdc4;
+            background: #f0fffe;
+        }
+        
+        .attempt-correct {
+            border-left-color: #51cf66;
+            background: #ebfbee;
+        }
+        
+        .attempt-number {
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .attempt-feedback {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #51cf66, #40c057);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Tebak Angka (8x)</h1>
+        
+        <div id="game-content">
+            <p style="margin-bottom: 15px; color: #666;"><strong>Game Tebak Angka Python</strong></p>
+            
+            <div class="game-info">
+                <div class="info-item">
+                    <div class="info-label">Kesempatan</div>
+                    <div id="attempts-count" class="info-value">8</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Tebakan</div>
+                    <div id="attempts-made" class="info-value">0/8</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Rentang</div>
+                    <div class="info-value">1-100</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            
+            <div class="input-section">
+                <input type="number" id="guess-input" placeholder="Masukkan angka (1-100)" min="1" max="100">
+                <button id="guess-btn" onclick="checkGuess()">🎯 Tebak Sekarang!</button>
+                <button id="restart-btn" onclick="restartGame()" style="display:none;">🔄 Main Lagi</button>
+            </div>
+            
+            <div id="message" class="info">
+                Selamat datang! Tebak angka antara 1-100. Anda punya 8 kesempatan!
+            </div>
+            
+            <div class="attempts-list">
+                <h3>📊 Riwayat Tebakan</h3>
+                <div id="attempts-history">
+                    <div class="attempt-item" style="text-align: center; color: #6c757d; justify-content: center;">
+                        Belum ada tebakan...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // VARIABEL GAME - PASTI BERJALAN TANPA PYTHON
+        let secretNumber;
+        let attemptsLeft;
+        let attemptsMade;
+        let attemptsHistory;
+        let gameOver;
+
+        // INISIALISASI GAME
+        function initGame() {
+            secretNumber = Math.floor(Math.random() * 100) + 1;
+            attemptsLeft = 8;
+            attemptsMade = 0;
+            attemptsHistory = [];
+            gameOver = false;
+            
+            console.log("Angka rahasia:", secretNumber); // Untuk debugging
+            
+            updateGameState();
+            showMessage("Game dimulai! Tebak angka antara 1-100. Anda punya 8 kesempatan!", "info");
+        }
+
+        // FUNGSI CEK TEBAKAN
+        function checkGuess() {
+            if (gameOver) {
+                showMessage("Game sudah berakhir! Klik 'Main Lagi' untuk bermain lagi.", "error");
+                return;
+            }
+            
+            const guessInput = document.getElementById('guess-input');
+            const guess = parseInt(guessInput.value);
+            
+            // VALIDASI INPUT
+            if (isNaN(guess)) {
+                showMessage("Masukkan angka yang valid!", "error");
+                return;
+            }
+            
+            if (guess < 1 || guess > 100) {
+                showMessage("Masukkan angka antara 1 dan 100!", "error");
+                return;
+            }
+            
+            // PROSES TEBAKAN
+            attemptsLeft--;
+            attemptsMade++;
+            
+            let feedback = "";
+            let resultType = "";
+            let message = "";
+            
+            if (guess === secretNumber) {
+                // TEBAKAN BENAR
+                feedback = "✅ BENAR!";
+                resultType = "correct";
+                message = "🎉 SELAMAT! Anda menebak dengan benar! Angka rahasia adalah " + secretNumber;
+                gameOver = true;
+            } else if (guess < secretNumber) {
+                // TERLALU RENDAH
+                feedback = "📈 Terlalu RENDAH";
+                resultType = "low";
+                message = "Terlalu RENDAH! Coba angka lebih besar. Sisa: " + attemptsLeft + " kesempatan";
+            } else {
+                // TERLALU TINGGI
+                feedback = "📉 Terlalu TINGGI";
+                resultType = "high";
+                message = "Terlalu TINGGI! Coba angka lebih kecil. Sisa: " + attemptsLeft + " kesempatan";
+            }
+            
+            // SIMPAN RIWAYAT
+            attemptsHistory.push({
+                guess: guess,
+                feedback: feedback,
+                type: resultType
+            });
+            
+            // CEK JIKA KESEMPATAN HABIS
+            if (attemptsLeft <= 0 && !gameOver) {
+                message = "💀 GAME OVER! Kesempatan habis. Angka rahasia adalah " + secretNumber;
+                gameOver = true;
+            }
+            
+            // TAMPILKAN PESAN
+            showMessage(message, gameOver ? (guess === secretNumber ? "success" : "error") : "info");
+            
+            // UPDATE STATE GAME
+            updateGameState();
+            
+            // RESET INPUT
+            guessInput.value = "";
+            guessInput.focus();
+            
+            // TOGGLE TOMBOL JIKA GAME OVER
+            if (gameOver) {
+                document.getElementById('restart-btn').style.display = 'block';
+                document.getElementById('guess-btn').disabled = true;
+            }
+        }
+
+        // FUNGSI RESTART GAME
+        function restartGame() {
+            initGame();
+            document.getElementById('restart-btn').style.display = 'none';
+            document.getElementById('guess-btn').disabled = false;
+            document.getElementById('guess-input').focus();
+        }
+
+        // UPDATE TAMPILAN GAME
+        function updateGameState() {
+            // UPDATE COUNTER
+            document.getElementById('attempts-count').textContent = attemptsLeft;
+            document.getElementById('attempts-made').textContent = attemptsMade + '/8';
+            
+            // UPDATE PROGRESS BAR
+            const progressPercent = (attemptsMade / 8) * 100;
+            document.getElementById('progress-fill').style.width = progressPercent + '%';
+            
+            // UPDATE WARNA PROGRESS BAR
+            const progressFill = document.getElementById('progress-fill');
+            if (attemptsLeft <= 1) {
+                progressFill.style.background = 'linear-gradient(to right, #ff6b6b, #fa5252)';
+            } else if (attemptsLeft <= 2) {
+                progressFill.style.background = 'linear-gradient(to right, #ffa94d, #ff922b)';
+            } else {
+                progressFill.style.background = 'linear-gradient(to right, #51cf66, #40c057)';
+            }
+            
+            // UPDATE RIWAYAT TEBAKAN
+            const attemptsHistoryElement = document.getElementById('attempts-history');
+            attemptsHistoryElement.innerHTML = '';
+            
+            if (attemptsHistory.length === 0) {
+                const emptyItem = document.createElement('div');
+                emptyItem.className = 'attempt-item';
+                emptyItem.style.textAlign = 'center';
+                emptyItem.style.color = '#6c757d';
+                emptyItem.style.justifyContent = 'center';
+                emptyItem.textContent = 'Belum ada tebakan...';
+                attemptsHistoryElement.appendChild(emptyItem);
+            } else {
+                attemptsHistory.forEach((attempt, index) => {
+                    const attemptItem = document.createElement('div');
+                    attemptItem.className = 'attempt-item attempt-' + attempt.type;
+                    
+                    attemptItem.innerHTML = `
+                        <div>
+                            <div class="attempt-number">Tebakan ${index + 1}: ${attempt.guess}</div>
+                            <div class="attempt-feedback">${attempt.feedback}</div>
+                        </div>
+                    `;
+                    
+                    attemptsHistoryElement.appendChild(attemptItem);
+                });
+            }
+            
+            // SCROLL KE BAWAH
+            attemptsHistoryElement.scrollTop = attemptsHistoryElement.scrollHeight;
+        }
+
+        // TAMPILKAN PESAN
+        function showMessage(message, type) {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = message;
+            messageElement.className = type;
+        }
+
+        // EVENT LISTENER UNTUK ENTER KEY
+        document.getElementById('guess-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkGuess();
+            }
+        });
+
+        // INISIALISASI GAME SAAT HALAMAN DIMUAT
+        window.onload = function() {
+            initGame();
+            document.getElementById('guess-input').focus();
+        };
+    </script>
+</body>
+</html>
